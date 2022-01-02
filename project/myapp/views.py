@@ -26,11 +26,35 @@ class UserList(generics.GenericAPIView):
 
 class SellingItemList(generics.GenericAPIView):
     def get(self , request):
-        user_obj = SellingItems.objects.all().order_by("-id")
+        user_obj = SellingItems.objects.all().order_by("-id")[:6]
+        special_discount = SpecialDealOffer.objects.all().order_by("-id")
         context = {
-            "user_list":SellingItemsSerializer(user_obj,many=True, context={'request': request}).data
+            "user_list":SellingItemsSerializer(user_obj,many=True, context={'request': request}).data,
+            "special_discount_offer":SpecialDealOfferSerializer(special_discount,many=True, context={'request': request}).data
         }
         return Response(context)
+
+from django.db.models import Q
+class SellingItemFilter(generics.GenericAPIView):
+    def post(self , request):
+        data        = request.data
+        search_input = data['filteredData']
+        Query = Q(item_name__icontains=search_input) | Q(price__icontains=search_input) | Q(description__icontains=search_input)
+        user_obj = SellingItems.objects.filter(Query)
+        special_discount = SpecialDealOffer.objects.all().order_by("-id")
+
+        context = {
+            "user_list":SellingItemsSerializer(user_obj,many=True, context={'request': request}).data,
+            "special_discount_offer":SpecialDealOfferSerializer(special_discount,many=True, context={'request': request}).data
+        }
+        return Response(context)
+
+
+
+
+
+
+
 
 class ContactUsView(generics.GenericAPIView):
     def post(self , request):
@@ -52,6 +76,24 @@ class ContactUsView(generics.GenericAPIView):
         }
         return Response(context)
 
+
+class ShoesDetails(generics.GenericAPIView):
+    def post(self , request):
+        data = request.data
+        item_id         = data['id']
+        item_obj = SellingItems.objects.get(id = item_id)
+        context = {
+            "shoesdetails":SellingItemsSerializer(item_obj,many=False, context={'request': request}).data
+        }
+        return Response(context)
+
+
+
+
+
+
+
+
 class UserLogin(generics.GenericAPIView):
     def post(self , request):
         data        = request.data
@@ -68,3 +110,4 @@ class UserLogin(generics.GenericAPIView):
             
         }
         return Response(context)
+
