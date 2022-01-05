@@ -44,3 +44,7 @@ class LocalShop(models.Model):
 
     def __str__(self):
         return self.shop_name
+
+
+
+

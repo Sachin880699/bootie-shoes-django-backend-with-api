@@ -8,6 +8,8 @@ from.serializers import *
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.db.models import Q
+
 User = get_user_model()
 
 sucess = {'code':status.HTTP_200_OK,'message':'sucess'}
@@ -34,7 +36,7 @@ class SellingItemList(generics.GenericAPIView):
         }
         return Response(context)
 
-from django.db.models import Q
+
 class SellingItemFilter(generics.GenericAPIView):
     def post(self , request):
         data        = request.data
@@ -90,10 +92,6 @@ class ShoesDetails(generics.GenericAPIView):
 
 
 
-
-
-
-
 class UserLogin(generics.GenericAPIView):
     def post(self , request):
         data        = request.data
@@ -111,3 +109,11 @@ class UserLogin(generics.GenericAPIView):
         }
         return Response(context)
 
+
+class ShopList(generics.GenericAPIView):
+    def get(self , request):
+        shop_obj = LocalShop.objects.all().order_by("-id")
+        context = {
+            "shop_list":ShopSerializer(shop_obj,many=True, context={'request': request}).data,
+        }
+        return Response(context)

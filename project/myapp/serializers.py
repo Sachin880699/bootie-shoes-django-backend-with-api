@@ -25,3 +25,9 @@ class SpecialDealOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model  = SpecialDealOffer
         fields = '__all__'
+
+class ShopSerializer(serializers.ModelSerializer):
+    # shop_owner = UserSerialiser(read_only=False, many=False)
+    class Meta:
+        model = LocalShop
+        fields = ['shop_owner','shop_name','shop_address','phone_number','email','rating','description']
